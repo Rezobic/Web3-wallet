@@ -1,0 +1,51 @@
+// Import the required libraries
+const Web3 = require('web3');
+
+// Connect to the Ethereum network using an Ethereum node provider
+const web3 = new Web3('https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID');
+
+// Generate a new Ethereum account
+const generateAccount = () => {
+  const account = web3.eth.accounts.create();
+  return account;
+};
+
+// Get the account balance
+const getBalance = async (address) => {
+  const balance = await web3.eth.getBalance(address);
+  return web3.utils.fromWei(balance, 'ether');
+};
+
+// Send Ether from one address to another
+const sendEther = async (sender, recipient, amount) => {
+  const tx = {
+    from: sender,
+    to: recipient,
+    value: web3.utils.toWei(amount, 'ether'),
+  };
+
+  const signedTx = await web3.eth.accounts.signTransaction(tx, sender.privateKey);
+  const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+  return receipt;
+};
+
+// Example usage
+const main = async () => {
+  // Generate a new account
+  const account = generateAccount();
+  console.log('Account:', account);
+
+  // Get the account balance
+  const balance = await getBalance(account.address);
+  console.log('Balance:', balance);
+
+  // Send Ether from one address to another
+  const sender = account;
+  const recipient = '0xRECIPIENT_ADDRESS';
+  const amount = '0.1';
+  const receipt = await sendEther(sender, recipient, amount);
+  console.log('Transaction Receipt:', receipt);
+};
+
+// Run the main function
+main();
